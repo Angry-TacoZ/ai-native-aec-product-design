@@ -1,4 +1,4 @@
-# Fieldline — Decision Continuity Artifact
+# Fieldline: Decision Continuity Artifact
 
 A speculative, local-only product exercise for a founding product-manager role at an AI-native AEC platform.
 

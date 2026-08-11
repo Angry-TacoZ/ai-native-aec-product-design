@@ -4,7 +4,7 @@ Create a speculative, hiring-manager-facing founding-PM product artifact for an 
 
 # Current status
 
-Interactive local prototype created. It models an architect's collaborative concept review, proposal-first approvals, and 3D handoff using simulated data only.
+Interactive local prototype created. It models an architect's collaborative concept review, proposal-first approvals, and 3D handoff using simulated data only. The public README title now uses a colon rather than an em dash.
 
 # Decisions
 
@@ -25,6 +25,7 @@ Interactive local prototype created. It models an architect's collaborative conc
 - React/Vite prototype under `src/`
 - Generated visual asset under `public/assets/`
 - Product exercise contents embedded in the Brief panel.
+- `README.md` copy refinement.
 
 # Verification
 
