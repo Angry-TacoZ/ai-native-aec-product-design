@@ -12,6 +12,7 @@ Interactive local prototype created. It models an architect's collaborative conc
 - Collaboration rule: a proposal is non-live until two distinct simulated editors approve it; the existing decision remains unchanged until then.
 - Product posture: preserve existing studio review rituals and treat Rhino/Speckle/Revit interoperability as core; BIM/CAD stays the system of record.
 - GitHub Pages slug: `ai-native-aec-product-design`; local development retains `/` while Actions builds use the repository subpath.
+- Public repository: `https://github.com/Angry-TacoZ/ai-native-aec-product-design` on `main`.
 - No model, CAD, file, network, or persistence integrations are implemented.
 
 # Changed files
@@ -28,10 +29,11 @@ Interactive local prototype created. It models an architect's collaborative conc
 - Browser console was clean after adding the favicon reference; visual QA passed in `design-qa.md` with side-by-side capture evidence under `output/playwright/`.
 - The canonical verifier passed with `PYTHONIOENCODING=utf-8` set for the Windows console.
 - Added a GitHub Pages Actions workflow; it will become active only after the repo is pushed and Pages is configured to use Actions.
+- GitHub Pages was enabled with the Actions source. Workflow run `31489619813` passed build and deploy; live fetch returned HTTP 200 with the expected subpath asset URLs.
 
 # Next task
 
-Add a GitHub remote, commit, push, and enable Pages with GitHub Actions; then optionally add distinct generated images for each alternative.
+Optionally add distinct generated images for each alternative before using this in a live interview.
 
 # Risks or blockers
 
