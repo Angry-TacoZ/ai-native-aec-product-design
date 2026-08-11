@@ -16,6 +16,7 @@ Interactive local prototype created. It models an architect's collaborative conc
 - Asset-path repair deployed in commit `85c1aa7`; the public page and `assets/harborview-concept.png` both returned HTTP 200 after deployment.
 - Alternatives behavior: each of the three simulated alternatives now owns a distinct architectural concept image, so selection changes the central review image and any subsequent handoff image.
 - Selection-dependent labels (stage, provenance, and approval checkpoint) derive from the active alternative rather than retaining an `Alt 1` hardcode.
+- Pages workflow explicitly opts nested JavaScript actions into Node 24 and upgrades checkout, setup-node, and deploy-pages to their Node-24 major versions; `upload-pages-artifact@v3` remains for Pages compatibility.
 - Public repository: `https://github.com/Angry-TacoZ/ai-native-aec-product-design` on `main`.
 - No model, CAD, file, network, or persistence integrations are implemented.
 
