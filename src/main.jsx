@@ -8,6 +8,8 @@ const alternatives = [
   { id: 'harbor', name: 'Harbor Edge', note: 'Draft' },
 ];
 
+const buildingImage = `${import.meta.env.BASE_URL}assets/harborview-concept.png`;
+
 const baseComments = [
   { name: 'Emma Chen', time: '9:32 AM', text: 'Strengthen north light strategy', detail: 'Proposed louver adjustment to reduce glare and increase daylight depth.' },
   { name: "Liam O’Connor", time: '9:47 AM', text: 'Confirm guardrail transparency', detail: 'Recommend low-iron glass with minimal posts to retain the waterfront view.' },
@@ -75,7 +77,7 @@ function App() {
           </div>
           <div className="rail-section">
             <div className="section-head"><p className="eyebrow">Alternatives</p><button onClick={() => setProposalOpen(true)}>New</button></div>
-            {alternatives.map((alt, index) => <button className={`alternative ${selected.id === alt.id ? 'active' : ''}`} key={alt.id} onClick={() => { setSelected(alt); setView('review'); }}><span className="thumbnail"><img src="/assets/harborview-concept.png" alt="Architectural concept" /></span><span><b>Alt {index + 1} · {alt.name}</b><small>{alt.note}</small></span></button>)}
+            {alternatives.map((alt, index) => <button className={`alternative ${selected.id === alt.id ? 'active' : ''}`} key={alt.id} onClick={() => { setSelected(alt); setView('review'); }}><span className="thumbnail"><img src={buildingImage} alt="Architectural concept" /></span><span><b>Alt {index + 1} · {alt.name}</b><small>{alt.note}</small></span></button>)}
           </div>
           <div className="rail-section input-list">
             <p className="eyebrow">Model inputs</p>
@@ -118,7 +120,7 @@ function App() {
 
 function ReviewCanvas({ comments, selected, approved, onPropose }) {
   return <div className="review-canvas">
-    <img className="hero-image" src="/assets/harborview-concept.png" alt="Waterfront civic building concept with a layered timber roof" />
+    <img className="hero-image" src={buildingImage} alt="Waterfront civic building concept with a layered timber roof" />
     <div className="annotation annotation-one"><span>1</span><b>Strengthen north light strategy</b><small>Emma · 9:32 AM</small></div>
     <div className="annotation annotation-two"><span>2</span><b>Confirm guardrail transparency</b><small>Liam · 9:47 AM</small></div>
     <div className="annotation annotation-three"><span>3</span><b>Consider deeper shade at entry plaza</b><small>Priya · 10:02 AM</small></div>
@@ -128,7 +130,7 @@ function ReviewCanvas({ comments, selected, approved, onPropose }) {
 }
 
 function Handoff({ selected }) {
-  return <div className="handoff-view"><div><p className="eyebrow">Handoff package</p><h1>{selected.name}</h1><p className="handoff-copy">The selected direction moves into the team's existing 3D workflow with its decision rationale and source context preserved. Fieldline does not become the system of record.</p><div className="handoff-package"><b>Included in this simulated package</b><ul><li>Rhino massing geometry · v7</li><li>Model inputs and provenance</li><li>Decision owner rationale</li><li>Review comments and approvals</li></ul></div></div><img src="/assets/harborview-concept.png" alt="Approved waterfront civic building concept" /><div className="integration-list"><p className="eyebrow">Existing studio tools</p><article><b>Rhino</b><span>Source of record · package ready</span><button>Sync package</button></article><article><b>Speckle</b><span>Coordination link will update</span><button>Sync package</button></article><article><b>Revit</b><span>Export after existing coordination</span><button>Prepare export</button></article></div></div>;
+  return <div className="handoff-view"><div><p className="eyebrow">Handoff package</p><h1>{selected.name}</h1><p className="handoff-copy">The selected direction moves into the team's existing 3D workflow with its decision rationale and source context preserved. Fieldline does not become the system of record.</p><div className="handoff-package"><b>Included in this simulated package</b><ul><li>Rhino massing geometry · v7</li><li>Model inputs and provenance</li><li>Decision owner rationale</li><li>Review comments and approvals</li></ul></div></div><img src={buildingImage} alt="Approved waterfront civic building concept" /><div className="integration-list"><p className="eyebrow">Existing studio tools</p><article><b>Rhino</b><span>Source of record · package ready</span><button>Sync package</button></article><article><b>Speckle</b><span>Coordination link will update</span><button>Sync package</button></article><article><b>Revit</b><span>Export after existing coordination</span><button>Prepare export</button></article></div></div>;
 }
 
 function DecisionBar({ proposalState, approvals, onApprove, approved, onHandoff, onPropose }) {
