@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-const alternatives = [
-  { id: 'terrace', name: 'Terrace Spine', note: 'Under review' },
-  { id: 'courtyard', name: 'Courtyard Loop', note: 'Viewed' },
-  { id: 'harbor', name: 'Harbor Edge', note: 'Draft' },
-];
+const assetPath = (filename) => `${import.meta.env.BASE_URL}assets/${filename}`;
 
-const buildingImage = `${import.meta.env.BASE_URL}assets/harborview-concept.png`;
+const alternatives = [
+  { id: 'terrace', name: 'Terrace Spine', note: 'Under review', image: assetPath('harborview-concept.png') },
+  { id: 'courtyard', name: 'Courtyard Loop', note: 'Viewed', image: assetPath('courtyard-loop-concept.png') },
+  { id: 'harbor', name: 'Harbor Edge', note: 'Draft', image: assetPath('harbor-edge-concept.png') },
+];
 
 const baseComments = [
   { name: 'Emma Chen', time: '9:32 AM', text: 'Strengthen north light strategy', detail: 'Proposed louver adjustment to reduce glare and increase daylight depth.' },
@@ -31,6 +31,7 @@ function App() {
   const approved = approvals.length === 2;
   const status = approved ? 'Approved direction' : proposalState === 'pending' ? 'Proposal in review' : 'Under review';
   const handoffReady = approved;
+  const selectedNumber = alternatives.findIndex((alternative) => alternative.id === selected.id) + 1;
 
   const addComment = () => {
     const clean = commentText.trim();
@@ -77,7 +78,7 @@ function App() {
           </div>
           <div className="rail-section">
             <div className="section-head"><p className="eyebrow">Alternatives</p><button onClick={() => setProposalOpen(true)}>New</button></div>
-            {alternatives.map((alt, index) => <button className={`alternative ${selected.id === alt.id ? 'active' : ''}`} key={alt.id} onClick={() => { setSelected(alt); setView('review'); }}><span className="thumbnail"><img src={buildingImage} alt="Architectural concept" /></span><span><b>Alt {index + 1} · {alt.name}</b><small>{alt.note}</small></span></button>)}
+            {alternatives.map((alt, index) => <button className={`alternative ${selected.id === alt.id ? 'active' : ''}`} key={alt.id} onClick={() => { setSelected(alt); setView('review'); }}><span className="thumbnail"><img src={alt.image} alt={`${alt.name} architectural concept`} /></span><span><b>Alt {index + 1} · {alt.name}</b><small>{alt.note}</small></span></button>)}
           </div>
           <div className="rail-section input-list">
             <p className="eyebrow">Model inputs</p>
@@ -90,9 +91,9 @@ function App() {
         </aside>
 
         <section className="main-stage">
-          <div className="stage-topline"><span>Alt 1</span><b>{selected.name}</b><span className={`status ${approved ? 'approved' : ''}`}>{status}</span><div><button onClick={() => setProposalOpen(true)}>Propose change</button><button onClick={() => setProvenanceOpen(true)}>Provenance</button></div></div>
-          {view === 'review' ? <ReviewCanvas comments={comments} selected={selected} approved={approved} onPropose={() => setProposalOpen(true)} /> : <Handoff selected={selected} />}
-          <DecisionBar proposalState={proposalState} approvals={approvals} onApprove={approveAs} approved={approved} onHandoff={() => navigate('handoff')} onPropose={() => setProposalOpen(true)} />
+          <div className="stage-topline"><span>Alt {selectedNumber}</span><b>{selected.name}</b><span className={`status ${approved ? 'approved' : ''}`}>{status}</span><div><button onClick={() => setProposalOpen(true)}>Propose change</button><button onClick={() => setProvenanceOpen(true)}>Provenance</button></div></div>
+          {view === 'review' ? <ReviewCanvas comments={comments} selected={selected} selectedNumber={selectedNumber} approved={approved} onPropose={() => setProposalOpen(true)} /> : <Handoff selected={selected} />}
+          <DecisionBar proposalState={proposalState} approvals={approvals} selected={selected} selectedNumber={selectedNumber} onApprove={approveAs} approved={approved} onHandoff={() => navigate('handoff')} onPropose={() => setProposalOpen(true)} />
           <div className="journey" aria-label="Workflow progress">
             <JourneyStep number="01" label="Concept" state="Complete" />
             <JourneyStep number="02" label="Review" state={approved ? 'Complete' : 'In progress'} active={!approved} />
@@ -118,23 +119,23 @@ function App() {
   );
 }
 
-function ReviewCanvas({ comments, selected, approved, onPropose }) {
+function ReviewCanvas({ comments, selected, selectedNumber, approved, onPropose }) {
   return <div className="review-canvas">
-    <img className="hero-image" src={buildingImage} alt="Waterfront civic building concept with a layered timber roof" />
+    <img className="hero-image" src={selected.image} alt={`${selected.name} waterfront civic building concept`} />
     <div className="annotation annotation-one"><span>1</span><b>Strengthen north light strategy</b><small>Emma · 9:32 AM</small></div>
     <div className="annotation annotation-two"><span>2</span><b>Confirm guardrail transparency</b><small>Liam · 9:47 AM</small></div>
     <div className="annotation annotation-three"><span>3</span><b>Consider deeper shade at entry plaza</b><small>Priya · 10:02 AM</small></div>
-    <section className="provenance-card"><p>AI-assisted model provenance</p><strong>This view was generated from Alt 1’s massing study.</strong><dl><div><dt>Source model</dt><dd>Rhino v7 · Commit 24fa7c1</dd></div><div><dt>Inputs</dt><dd>Site, program, massing, materials</dd></div><div><dt>Generated by</dt><dd>Emma Chen · AI v1.4</dd></div></dl><button onClick={onPropose}>{approved ? 'Create a new proposal' : 'Start proposal review'}</button></section>
+    <section className="provenance-card"><p>AI-assisted model provenance</p><strong>This view was generated from Alt {selectedNumber}’s massing study.</strong><dl><div><dt>Source model</dt><dd>Rhino v7 · Commit 24fa7c1</dd></div><div><dt>Inputs</dt><dd>Site, program, massing, materials</dd></div><div><dt>Generated by</dt><dd>Emma Chen · AI v1.4</dd></div></dl><button onClick={onPropose}>{approved ? 'Create a new proposal' : 'Start proposal review'}</button></section>
     <div className="canvas-label"><span>{selected.name}</span><b>{approved ? 'Decision recorded' : `${comments.length} review notes`}</b></div>
   </div>;
 }
 
 function Handoff({ selected }) {
-  return <div className="handoff-view"><div><p className="eyebrow">Handoff package</p><h1>{selected.name}</h1><p className="handoff-copy">The selected direction moves into the team's existing 3D workflow with its decision rationale and source context preserved. Fieldline does not become the system of record.</p><div className="handoff-package"><b>Included in this simulated package</b><ul><li>Rhino massing geometry · v7</li><li>Model inputs and provenance</li><li>Decision owner rationale</li><li>Review comments and approvals</li></ul></div></div><img src={buildingImage} alt="Approved waterfront civic building concept" /><div className="integration-list"><p className="eyebrow">Existing studio tools</p><article><b>Rhino</b><span>Source of record · package ready</span><button>Sync package</button></article><article><b>Speckle</b><span>Coordination link will update</span><button>Sync package</button></article><article><b>Revit</b><span>Export after existing coordination</span><button>Prepare export</button></article></div></div>;
+  return <div className="handoff-view"><div><p className="eyebrow">Handoff package</p><h1>{selected.name}</h1><p className="handoff-copy">The selected direction moves into the team's existing 3D workflow with its decision rationale and source context preserved. Fieldline does not become the system of record.</p><div className="handoff-package"><b>Included in this simulated package</b><ul><li>Rhino massing geometry · v7</li><li>Model inputs and provenance</li><li>Decision owner rationale</li><li>Review comments and approvals</li></ul></div></div><img src={selected.image} alt={`Approved ${selected.name} waterfront civic building concept`} /><div className="integration-list"><p className="eyebrow">Existing studio tools</p><article><b>Rhino</b><span>Source of record · package ready</span><button>Sync package</button></article><article><b>Speckle</b><span>Coordination link will update</span><button>Sync package</button></article><article><b>Revit</b><span>Export after existing coordination</span><button>Prepare export</button></article></div></div>;
 }
 
-function DecisionBar({ proposalState, approvals, onApprove, approved, onHandoff, onPropose }) {
-  if (proposalState !== 'pending') return <section className="decision-bar"><div><p className="eyebrow">Decision checkpoint · Design direction</p><b>{approved ? 'Alt 1 is approved and the decision record is locked.' : 'Should we advance Alt 1: Terrace Spine as the approved direction?'}</b><span>{approved ? 'Human review completed. A new change must become a new proposal.' : 'Review evidence, discuss with the team, and record a decision.'}</span></div><div className="decision-actions">{approved ? <button className="primary" onClick={onHandoff}>Open 3D handoff</button> : <><button onClick={onPropose}>Request changes</button><button>Hold decision</button><button className="primary" onClick={onPropose}>Start proposal</button></>}</div></section>;
+function DecisionBar({ proposalState, approvals, selected, selectedNumber, onApprove, approved, onHandoff, onPropose }) {
+  if (proposalState !== 'pending') return <section className="decision-bar"><div><p className="eyebrow">Decision checkpoint · Design direction</p><b>{approved ? `Alt ${selectedNumber} is approved and the decision record is locked.` : `Should we advance Alt ${selectedNumber}: ${selected.name} as the approved direction?`}</b><span>{approved ? 'Human review completed. A new change must become a new proposal.' : 'Review evidence, discuss with the team, and record a decision.'}</span></div><div className="decision-actions">{approved ? <button className="primary" onClick={onHandoff}>Open 3D handoff</button> : <><button onClick={onPropose}>Request changes</button><button>Hold decision</button><button className="primary" onClick={onPropose}>Start proposal</button></>}</div></section>;
   return <section className="decision-bar proposal-bar"><div><p className="eyebrow">Live proposal · not yet applied</p><b>Two distinct editors must approve before this becomes the live direction.</b><span>{approvals.length}/2 approvals recorded. The existing direction remains unchanged.</span></div><div className="decision-actions"><button className={approvals.includes('Maya') ? 'done' : ''} onClick={() => onApprove('Maya')}>{approvals.includes('Maya') ? 'Maya approved' : 'Approve as Maya'}</button><button className={approvals.includes('Liam') ? 'done' : ''} onClick={() => onApprove('Liam')}>{approvals.includes('Liam') ? 'Liam approved' : 'Approve as Liam'}</button></div></section>;
 }
 
