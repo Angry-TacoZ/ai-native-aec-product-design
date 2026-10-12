@@ -23,13 +23,15 @@ function App() {
   const [proposalText, setProposalText] = useState('Test a deeper south canopy and retain the north-light louver study.');
   const [proposalOpen, setProposalOpen] = useState(false);
   const [proposalState, setProposalState] = useState('none');
+  const [proposalAlternativeId, setProposalAlternativeId] = useState(null);
   const [approvals, setApprovals] = useState([]);
   const [view, setView] = useState('review');
   const [briefOpen, setBriefOpen] = useState(false);
   const [provenanceOpen, setProvenanceOpen] = useState(false);
 
-  const approved = approvals.length === 2;
-  const status = approved ? 'Approved direction' : proposalState === 'pending' ? 'Proposal in review' : 'Under review';
+  const hasCurrentProposal = proposalState === 'pending' && proposalAlternativeId === selected.id;
+  const approved = hasCurrentProposal && approvals.length === 2;
+  const status = approved ? 'Approved direction' : hasCurrentProposal ? 'Proposal in review' : 'Under review';
   const handoffReady = approved;
   const selectedNumber = alternatives.findIndex((alternative) => alternative.id === selected.id) + 1;
 
@@ -42,6 +44,7 @@ function App() {
 
   const submitProposal = () => {
     if (!proposalText.trim()) return;
+    setProposalAlternativeId(selected.id);
     setProposalState('pending');
     setApprovals([]);
     setProposalOpen(false);
@@ -49,7 +52,7 @@ function App() {
   };
 
   const approveAs = (person) => {
-    if (proposalState !== 'pending' || approvals.includes(person)) return;
+    if (!hasCurrentProposal || approvals.includes(person)) return;
     setApprovals((items) => [...items, person]);
   };
 
@@ -93,7 +96,7 @@ function App() {
         <section className="main-stage">
           <div className="stage-topline"><span>Alt {selectedNumber}</span><b>{selected.name}</b><span className={`status ${approved ? 'approved' : ''}`}>{status}</span><div><button onClick={() => setProposalOpen(true)}>Propose change</button><button onClick={() => setProvenanceOpen(true)}>Provenance</button></div></div>
           {view === 'review' ? <ReviewCanvas comments={comments} selected={selected} selectedNumber={selectedNumber} approved={approved} onPropose={() => setProposalOpen(true)} /> : <Handoff selected={selected} />}
-          <DecisionBar proposalState={proposalState} approvals={approvals} selected={selected} selectedNumber={selectedNumber} onApprove={approveAs} approved={approved} onHandoff={() => navigate('handoff')} onPropose={() => setProposalOpen(true)} />
+          <DecisionBar hasCurrentProposal={hasCurrentProposal} approvals={approvals} selected={selected} selectedNumber={selectedNumber} onApprove={approveAs} approved={approved} onHandoff={() => navigate('handoff')} onPropose={() => setProposalOpen(true)} />
           <div className="journey" aria-label="Workflow progress">
             <JourneyStep number="01" label="Concept" state="Complete" />
             <JourneyStep number="02" label="Review" state={approved ? 'Complete' : 'In progress'} active={!approved} />
@@ -134,9 +137,9 @@ function Handoff({ selected }) {
   return <div className="handoff-view"><div><p className="eyebrow">Handoff package</p><h1>{selected.name}</h1><p className="handoff-copy">The selected direction moves into the team's existing 3D workflow with its decision rationale and source context preserved. Fieldline does not become the system of record.</p><div className="handoff-package"><b>Included in this simulated package</b><ul><li>Rhino massing geometry · v7</li><li>Model inputs and provenance</li><li>Decision owner rationale</li><li>Review comments and approvals</li></ul></div></div><img src={selected.image} alt={`Approved ${selected.name} waterfront civic building concept`} /><div className="integration-list"><p className="eyebrow">Existing studio tools</p><article><b>Rhino</b><span>Source of record · package ready</span><button>Sync package</button></article><article><b>Speckle</b><span>Coordination link will update</span><button>Sync package</button></article><article><b>Revit</b><span>Export after existing coordination</span><button>Prepare export</button></article></div></div>;
 }
 
-function DecisionBar({ proposalState, approvals, selected, selectedNumber, onApprove, approved, onHandoff, onPropose }) {
-  if (proposalState !== 'pending') return <section className="decision-bar"><div><p className="eyebrow">Decision checkpoint · Design direction</p><b>{approved ? `Alt ${selectedNumber} is approved and the decision record is locked.` : `Should we advance Alt ${selectedNumber}: ${selected.name} as the approved direction?`}</b><span>{approved ? 'Human review completed. A new change must become a new proposal.' : 'Review evidence, discuss with the team, and record a decision.'}</span></div><div className="decision-actions">{approved ? <button className="primary" onClick={onHandoff}>Open 3D handoff</button> : <><button onClick={onPropose}>Request changes</button><button>Hold decision</button><button className="primary" onClick={onPropose}>Start proposal</button></>}</div></section>;
-  return <section className="decision-bar proposal-bar"><div><p className="eyebrow">Live proposal · not yet applied</p><b>Two distinct editors must approve before this becomes the live direction.</b><span>{approvals.length}/2 approvals recorded. The existing direction remains unchanged.</span></div><div className="decision-actions"><button className={approvals.includes('Maya') ? 'done' : ''} onClick={() => onApprove('Maya')}>{approvals.includes('Maya') ? 'Maya approved' : 'Approve as Maya'}</button><button className={approvals.includes('Liam') ? 'done' : ''} onClick={() => onApprove('Liam')}>{approvals.includes('Liam') ? 'Liam approved' : 'Approve as Liam'}</button></div></section>;
+function DecisionBar({ hasCurrentProposal, approvals, selected, selectedNumber, onApprove, approved, onHandoff, onPropose }) {
+  if (!hasCurrentProposal) return <section className="decision-bar"><div><p className="eyebrow">Decision checkpoint · Design direction</p><b>{approved ? `Alt ${selectedNumber} is approved and the decision record is locked.` : `Should we advance Alt ${selectedNumber}: ${selected.name} as the approved direction?`}</b><span>{approved ? 'Human review completed. A new change must become a new proposal.' : 'Review evidence, discuss with the team, and record a decision.'}</span></div><div className="decision-actions">{approved ? <button className="primary" onClick={onHandoff}>Open 3D handoff</button> : <><button onClick={onPropose}>Request changes</button><button>Hold decision</button><button className="primary" onClick={onPropose}>Start proposal</button></>}</div></section>;
+  return <section className="decision-bar proposal-bar"><div><p className="eyebrow">Proposal for Alt {selectedNumber} · {selected.name}</p><b>Two distinct editors must approve before this becomes the live direction.</b><span>{approvals.length}/2 approvals recorded. The existing direction remains unchanged.</span></div><div className="decision-actions"><button className={approvals.includes('Maya') ? 'done' : ''} onClick={() => onApprove('Maya')}>{approvals.includes('Maya') ? 'Maya approved' : 'Approve as Maya'}</button><button className={approvals.includes('Liam') ? 'done' : ''} onClick={() => onApprove('Liam')}>{approvals.includes('Liam') ? 'Liam approved' : 'Approve as Liam'}</button></div></section>;
 }
 
 function JourneyStep({ number, label, state, active }) { return <div className={`journey-step ${active ? 'active' : ''}`}><span>{number}</span><b>{label}</b><small>{state}</small></div>; }
