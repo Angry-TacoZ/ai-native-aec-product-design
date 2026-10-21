@@ -4,12 +4,13 @@ Create a speculative, hiring-manager-facing founding-PM product artifact for an 
 
 # Current status
 
-Interactive local prototype created. It models an architect's collaborative concept review, proposal-first approvals, and 3D handoff using simulated data only.
+Interactive local prototype created. It models an architect's collaborative concept review, proposal-first approvals, and 3D handoff using simulated data only. The public README title now uses a colon rather than an em dash.
 
 # Decisions
 
 - Visual source: the warm review-first Option 3 concept.
 - Collaboration rule: a proposal is non-live until two distinct simulated editors approve it; the existing decision remains unchanged until then.
+- Approval scope: each proposal captures the selected alternative, and its approvals only mark that same alternative as approved.
 - Product posture: preserve existing studio review rituals and treat Rhino/Speckle/Revit interoperability as core; BIM/CAD stays the system of record.
 - GitHub Pages slug: `ai-native-aec-product-design`; local development retains `/` while Actions builds use the repository subpath.
 - Pages asset fix: React image URLs use `import.meta.env.BASE_URL` so public assets resolve beneath the repository subpath rather than at the GitHub Pages domain root.
@@ -25,6 +26,7 @@ Interactive local prototype created. It models an architect's collaborative conc
 - React/Vite prototype under `src/`
 - Generated visual asset under `public/assets/`
 - Product exercise contents embedded in the Brief panel.
+- `README.md` copy refinement.
 
 # Verification
 
